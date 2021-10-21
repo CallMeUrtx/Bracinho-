@@ -40,18 +40,18 @@ function preload(){
 }
 
 function setup() {
-  createCanvas(600, 200);
-  
-  trex = createSprite(50,180,20,50);
+  createCanvas(windowWidth, windowHeight);
+                //largura   //altura
+  trex = createSprite(50,height-70,20,50);
   trex.addAnimation("running", trex_correndo);
-  trex.addAnimation("collided" , trex_colidiu)
+  trex.addAnimation("collided" , trex_colidiu);
   trex.scale = 0.5;
   
-  solo = createSprite(200,180,400,20);
+  solo = createSprite(width-50,100,400,20);
   solo.addImage("ground",imagemdosolo);
   solo.velocityX = -4;
   
-  soloinvisivel = createSprite(200,190,400,10);
+  soloinvisivel = createSprite(width/2,height-10,width,10);
   soloinvisivel.visible = false;
    
   //criar grupos de obstáculos e de nuvens
@@ -89,9 +89,11 @@ function draw() {
        solo.x = solo.width/2;
     }
     
-    if(keyDown("space")&& trex.y >= 100) {
-       trex.velocityY = -13;
+    if(touches.length > 0 || keyDown("space")&& trex.y >= 100) {
+      trex.velocityY = -13;
       somSalto.play();
+      touches = [];
+      
     }
     
     trex.velocityY = trex.velocityY + 0.8;
@@ -109,6 +111,7 @@ function draw() {
     if(grupodeobstaculos.isTouching(trex)){
       estadoJogo = ENCERRAR;
       somMorte.play();
+      trex.changeAnimation("collided" , trex_colidiu);
     }
     
   }
@@ -126,8 +129,9 @@ function draw() {
     
     grupodeobstaculos.setLifetimeEach(-1);
     
-    if(mousePressedOver(restart)){
+    if(touches.length > 0 || mousePressedOver(restart)){
       reset();
+      touches = [];
     }
       
     }
@@ -144,7 +148,8 @@ function reset(){
   grupodenuvens.destroyEach();
   grupodeobstaculos.destroyEach();
   pontuacao = 0;
-  
+  trex.changeAnimation("running", trex_correndo);
+   
 }
 
 function gerarObstaculos(){
